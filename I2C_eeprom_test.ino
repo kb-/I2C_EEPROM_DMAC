@@ -1,0 +1,95 @@
+#include "Arduino.h"
+#include <string.h>
+#include <stdio.h>
+#include <Wire.h>
+#include "I2C_Anything.h"
+#include "eepromi2c.h"
+
+#define I2C_CLOCK 100000
+
+int n = 0;
+
+//for Serial input
+short eeBS;
+String inputString = "";         // a string to hold incoming data
+boolean stringComplete = false;  // whether the string is complete
+
+struct eespool
+{
+  int16_t ID;
+  float wireDiam;//mm
+  float spoolLength;//m
+  float used;//used length (m)
+  int16_t savecnt;
+} eespool;
+
+void setup() {
+  SerialUSB.begin(115200);  // start serial for output
+  while(!SerialUSB){
+  ; // wait for serial port to connect.
+  }
+  SerialUSB.println("Master connected");
+  Wire.begin(80);//start i2c communication
+  Wire.setClock(I2C_CLOCK);
+  inputString.reserve(2);
+
+  //load last used spool
+  eeBS = eeRead(0,eespool);//returns block size
+  serialOut(0);
+}
+
+void loop() {
+  if(stringComplete){
+    if(inputString=="r\r"){
+      NVIC_SystemReset();      // processor software reset
+    }
+    if(inputString=="d\r"){
+      n++;
+      serialOut(n);
+    }
+    inputString = "";
+    stringComplete = false;
+  }
+}
+
+void serialOut(int n){
+  eeRead(n*eeBS,eespool);
+  SerialUSB.print("n");
+  SerialUSB.println(n);  
+  SerialUSB.print("ID");
+  SerialUSB.println(eespool.ID);
+  SerialUSB.print("wireDiam");
+  SerialUSB.println(eespool.wireDiam);
+  SerialUSB.print("spoolLength");
+  SerialUSB.println(eespool.spoolLength);
+  SerialUSB.print("used");
+  SerialUSB.println(eespool.used);
+  SerialUSB.print("savecnt");
+  SerialUSB.println(eespool.savecnt);
+}
+
+//get serial commands
+void serialEvent(){
+  int se_cnt = 0;
+  while(SerialUSB.available()){
+    // get the new byte:
+    char inChar =(char)SerialUSB.read();
+    // add it to the inputString:
+    inputString += inChar;
+    // if the incoming character is a newline, set a flag
+    // so the main loop can do something about it:
+    if(inChar == '\r'){
+      stringComplete = true;
+    }
+    se_cnt++;
+    if(se_cnt>50){
+      se_cnt=0;
+      break;
+    }
+  }
+}
+
+//serial event for SAMD
+void serialEventRun(void){
+  if(SerialUSB.available()) serialEvent();
+}
