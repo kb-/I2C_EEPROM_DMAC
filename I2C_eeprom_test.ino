@@ -25,9 +25,7 @@ struct eespool
 
 void setup() {
   SerialUSB.begin(115200);  // start serial for output
-  while(!SerialUSB){
-  ; // wait for serial port to connect.
-  }
+  while(!SerialUSB);// wait for serial port to connect.
   SerialUSB.println("Master connected");
   I2C.attachReadCallback(read_cb);
   I2C.begin(100000,REG_ADDR_16BIT);//start i2c communication
