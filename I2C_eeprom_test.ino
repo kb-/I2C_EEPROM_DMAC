@@ -14,6 +14,7 @@ short eeBS;
 String inputString = "";         // a string to hold incoming data
 boolean stringComplete = false;  // whether the string is complete
 
+#pragma pack(push, 1)//force unaligned data (16 bit / 32 bit data sharing compatibility); __attribute__((packed, aligned(1))) ignored for some reason
 struct eespool
 {
   int16_t ID;
@@ -22,6 +23,7 @@ struct eespool
   float used;//used length (m)
   int16_t savecnt;
 } eespool;
+#pragma pack(pop)
 
 void setup() {
   SerialUSB.begin(115200);  // start serial for output
@@ -31,10 +33,16 @@ void setup() {
   SerialUSB.println("Master connected");
   Wire.begin(80);//start i2c communication
   Wire.setClock(I2C_CLOCK);
+   
   inputString.reserve(2);
 
   //load last used spool
   eeBS = eeRead(0,eespool);//returns block size
+  SerialUSB.print("eeBS");
+  SerialUSB.println(eeBS);
+  SerialUSB.print("eespool size");
+  SerialUSB.println(sizeof(eespool));    
+
   serialOut(0);
 }
 
@@ -56,15 +64,15 @@ void serialOut(int n){
   eeRead(n*eeBS,eespool);
   SerialUSB.print("n");
   SerialUSB.println(n);  
-  SerialUSB.print("ID");
+  SerialUSB.print("ID:         ");
   SerialUSB.println(eespool.ID);
-  SerialUSB.print("wireDiam");
+  SerialUSB.print("wireDiam:   ");
   SerialUSB.println(eespool.wireDiam);
-  SerialUSB.print("spoolLength");
+  SerialUSB.print("spoolLength:");
   SerialUSB.println(eespool.spoolLength);
-  SerialUSB.print("used");
+  SerialUSB.print("used:       ");
   SerialUSB.println(eespool.used);
-  SerialUSB.print("savecnt");
+  SerialUSB.print("savecnt:    ");
   SerialUSB.println(eespool.savecnt);
 }
 
