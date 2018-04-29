@@ -19,8 +19,8 @@ template <typename T> unsigned int I2C_readAnything(T& value)
     return i;
   }
   
-template <typename T> int16_t I2C_singleWriteAnything (const T& value) {
-  int16_t size = sizeof value;
+template <typename T> int I2C_singleWriteAnything (const T& value) {
+  int size = sizeof value;
   byte vals[size];
   const byte* p = (const byte*) &value;
   unsigned int i;
