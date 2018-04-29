@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <Wire.h>
-#include "I2C_Anything.h"
 #include "eepromi2c.h"
 
 #define I2C_CLOCK 100000
