@@ -24,19 +24,20 @@ template <class T> int eeRead(int ee, T& value)
   uint8_t* p = (uint8_t*)(void*)&value;
   unsigned int i;
   
-  I2C.initWriteRegAddr(DEVICE, ee);        // Set-up DMAC to write to MPU6050 register pointer
-  while(I2C.writeBusy);
+  I2C.readByte(DEVICE, ee);        // Set-up DMAC to write to MPU6050 register pointer
+  while(I2C.readBusy);
   //Wire.beginTransmission(DEVICE);
   //Wire.write((int)(ee >> 8)); // MSB
   //Wire.write((int)(ee & 0xFF)); // LSB
   //Wire.endTransmission();
-  I2C.initReadBytes(DEVICE,p,sizeof(value));
+  //I2C.initReadBytes(DEVICE,p,sizeof(value));
   //Wire.requestFrom(DEVICE,sizeof(value));
-  I2C.read();
-  while(I2C.readBusy);
+  //I2C.read();
+  //while(I2C.readBusy);
   //for (i = 0; i < sizeof(value); i++)
   //  if(Wire.available())
   //    *p++ = Wire.read();
+  p = I2C.getData();
   i = sizeof(value);//to do: 0 if error
   return i;
 }
