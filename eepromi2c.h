@@ -25,6 +25,7 @@ template <class T> int eeRead(int ee, T& value)
   unsigned int i;
   
   I2C.initWriteRegAddr(DEVICE, ee);        // Set-up DMAC to write to MPU6050 register pointer
+  I2C.write();
   while(I2C.writeBusy);
   //Wire.beginTransmission(DEVICE);
   //Wire.write((int)(ee >> 8)); // MSB
