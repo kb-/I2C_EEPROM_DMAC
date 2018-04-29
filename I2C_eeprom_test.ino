@@ -29,6 +29,7 @@ void setup() {
   ; // wait for serial port to connect.
   }
   SerialUSB.println("Master connected");
+  I2C.attachReadCallback(read_cb);
   I2C.begin(100000,REG_ADDR_16BIT);//start i2c communication
    
   inputString.reserve(2);
@@ -59,6 +60,9 @@ void loop() {
 
 void serialOut(int n){
   eeRead(n*eeBS,eespool);
+}
+
+void read_cb(){
   SerialUSB.print("n");
   SerialUSB.println(n);  
   SerialUSB.print("ID:         ");
@@ -70,7 +74,7 @@ void serialOut(int n){
   SerialUSB.print("used:       ");
   SerialUSB.println(eespool.used);
   SerialUSB.print("savecnt:    ");
-  SerialUSB.println(eespool.savecnt);
+  SerialUSB.println(eespool.savecnt);  
 }
 
 //get serial commands
