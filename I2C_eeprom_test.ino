@@ -1,7 +1,6 @@
 #include "Arduino.h"
 #include <string.h>
 #include <stdio.h>
-#include <Wire.h>
 #include "eepromi2c.h"
 
 #define I2C_CLOCK 100000
@@ -30,8 +29,7 @@ void setup() {
   ; // wait for serial port to connect.
   }
   SerialUSB.println("Master connected");
-  Wire.begin(80);//start i2c communication
-  Wire.setClock(I2C_CLOCK);
+  I2C.begin(100000,REG_ADDR_16BIT);//start i2c communication
    
   inputString.reserve(2);
 
