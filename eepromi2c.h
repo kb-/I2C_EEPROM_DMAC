@@ -4,9 +4,10 @@
 
 //in the normal write anything the eeaddress is incrimented after the writing of each byte. The Wire library does this behind the scenes.
 
-//template <class T> int eeWrite(int ee, const T& value)
-//{
-//  const byte* p = (const byte*)(const void*)&value;
+template <class T> int eeWrite(int ee, const T& value)
+{
+  uint8_t* p = (uint8_t*)(void*)&value;
+  I2C.writeBytes(DEVICE, ee, p, sizeof(value));
 //  unsigned int i;
 //  
 //  Wire.beginTransmission(DEVICE);
@@ -16,7 +17,8 @@
 //    Wire.write(*p++);
 //  Wire.endTransmission();
 //  return i;
-//}
+  return sizeof(value);//to not break original eepromi2c
+}
 
 template <class T> int eeRead(int ee, T& value)
 {
@@ -24,7 +26,7 @@ template <class T> int eeRead(int ee, T& value)
   
   I2C.initWriteRegAddr(DEVICE, ee);        // Set-up DMAC to write to MPU6050 register pointer
   I2C.write();
-  I2C.initReadBytes(DEVICE,p,sizeof(value));
+  I2C.initReadBytes(DEVICE, p, sizeof(value));
   I2C.read();
-  return sizeof(value);
+  return sizeof(value);//to not break original eepromi2c
 }

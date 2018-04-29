@@ -61,6 +61,7 @@ void serialOut(int n){
 }
 
 void read_cb(){
+  //to do: add SERCOM commands to check write ok state
   SerialUSB.print("n");
   SerialUSB.println(n);  
   SerialUSB.print("ID:         ");
