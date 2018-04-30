@@ -13,15 +13,19 @@ String inputString = "";         // a string to hold incoming data
 boolean stringComplete = false;  // whether the string is complete
 
 #pragma pack(push, 1)//force unaligned data (16 bit / 32 bit data sharing compatibility); __attribute__((packed, aligned(1))) ignored for some reason
-struct eespool
+struct Eespool
 {
   int16_t ID;
   float wireDiam;//mm
   float spoolLength;//m
   float used;//used length (m)
   int16_t savecnt;
-} eespool;
+};
 #pragma pack(pop)
+
+Eespool eespool;
+Eespool eespoolA;
+Eespool eespoolB;
 
 void setup() {
   SerialUSB.begin(115200);  // start serial for output
@@ -39,24 +43,28 @@ void setup() {
   SerialUSB.print("eespool size");
   SerialUSB.println(sizeof(eespool));    
 
-  serialOut(0);
+  read_eeprom(0);
 }
 
 void loop() {
   if(stringComplete){
-    if(inputString=="r\r"){
+    if(inputString=="r\r"){//r key: reset
       NVIC_SystemReset();      // processor software reset
     }
-    if(inputString=="d\r"){
+    else if(inputString=="i\r"){//i key: read
       n++;
-      serialOut(n);
+      read_eeprom(n);
+    }
+    else if(inputString=="o\r"){//o key: write
+      n++;
+      write_eeprom(n);
     }
     inputString = "";
     stringComplete = false;
   }
 }
 
-void serialOut(int n){
+void read_eeprom(int n){
   eeRead(n*eeBS,eespool);
 }
 
@@ -74,6 +82,20 @@ void read_cb(){
   SerialUSB.println(eespool.used);
   SerialUSB.print("savecnt:    ");
   SerialUSB.println(eespool.savecnt);  
+}
+
+bool ab;
+void write_eeprom(int n){
+  eespoolA.ID = 10;
+  eespoolA.used = 1000;
+  eespoolB.ID = 20;
+  eespoolB.used = 2000;
+  if (ab){
+    eeWrite(0,eespoolA);
+  }else{
+    eeWrite(0,eespoolB);
+  }
+  ab++;
 }
 
 //get serial commands
